@@ -1,0 +1,30 @@
+# --- Python Gereksiz Dosyaları ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Sanal Ortam (Virtual Environment) ---
+llm_venv/
+venv/
+.venv/
+env/
+
+# --- IDE ve Sistem Dosyaları ---
+.vscode/
+.idea/
+.DS_Store
+
+# --- Gradio Önbelleği ---
+.gradio/
+
+# --- Oluşturulan Dosyalar ---
+*.pptx
+
+# --- Büyük Model Dosyaları (Local LLM) ---
+*.bin
+*.safetensors
+*.pth
+
+# --- Hassas Bilgiler ---
+.env
+api_key.txt

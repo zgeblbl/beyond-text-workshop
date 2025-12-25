@@ -1,0 +1,8 @@
+opencv-python
+mediapipe
+gradio
+google-generativeai
+transformers
+torch
+accelerate
+scipy
