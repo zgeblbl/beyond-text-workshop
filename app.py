@@ -49,33 +49,15 @@ def process_pipeline(image):
                 mp_drawing_styles.get_default_hand_landmarks_style(),
                 mp_drawing_styles.get_default_hand_connections_style())
 
-            ##############################
-            # count fingers
-            fingers = utils.count_fingers(hand_landmarks)
-            
-            # our logic to map finger count to gesture names
-            ##############################
-            if fingers == 0: current_gesture = "Yumruk (Rock)"
-            elif fingers == 2: current_gesture = "Zafer (Peace)"
-            elif fingers == 5: current_gesture = "Selam (Hello)"
-            elif fingers == 1: current_gesture = "Isaret (Point)"
-            else: current_gesture = f"{fingers} Parmak"
+            # ----- RULE BASED CLASSIFICATION OF GESTURES -----
+
+
 
             cv2.putText(image_bgr, f"Tespit: {current_gesture}", (10, 50), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             
-    ##############################
-    current_time = time.time()
-    if current_gesture != "El Yok":
-        if (current_gesture != last_gesture) or (current_time - last_api_call_time > COOLDOWN_SECONDS):
-            
-            print(f"LMM İsteği Gönderiliyor: {current_gesture}")
-            cached_response = utils.get_llm_response(current_gesture)
-            
-            last_gesture = current_gesture
-            last_api_call_time = current_time
-
-    final_image = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)    # for gradio
+    # ----- LLM COOLDOWN AND EVENT DRIVEN LOGIC -----
+    
     
     return final_image, cached_response
 

@@ -5,7 +5,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # --- AYARLAR ---
-USE_LOCAL_LLM = True  
+USE_LOCAL_LLM = True
 def load_api_key():
     try:
         if os.path.exists("api_key.txt"):
@@ -54,16 +54,15 @@ def get_llm_response(gesture_name):
     
     if USE_LOCAL_LLM and pipe:
         try:
-            ##############################
-            messages = [
-                {"role": "system", "content": "Sen yardımsever bir robotsun. Çok kısa Türkçe cevap ver."},
-                {"role": "user", "content": f"Kullanıcı '{gesture_name}' hareketi yaptı. Ne dersin?"}
-            ]
+            # ----- Messages to LLM -----
+            messages = []
+
             
             prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             outputs = pipe(prompt, max_new_tokens=40, do_sample=True, temperature=0.7)
             
             response = outputs[0]["generated_text"].split("assistant")[-1].strip()
+            print(f"Local: {response}")
             return f"Local: {response}"
             
         except Exception as e:
@@ -71,35 +70,27 @@ def get_llm_response(gesture_name):
 
     elif model:
         try:
-            ##############################
-            prompt = f"Sen robotsun. Kullanıcı '{gesture_name}' yaptı. Komik tek cümle söyle."
-            response = model.generate_content(prompt)
-            return f"Gemini: {response.text.strip()}"
+            # ----- Messages to LLM -----
+
+
         except Exception as e:
+            print(f"hata: {e}")
             return get_mock_response(gesture_name)
 
     else:
         return get_mock_response(gesture_name)
 
 def get_mock_response(gesture_name):
-    ##############################
-    mock_responses = {
-        "Yumruk (Rock)": "Mock: Güç bende!",
-        "Zafer (Peace)": "Mock: Barış olsun.",
-        "Selam (Hello)": "Mock: Selamlar!",
-        "Isaret (Point)": "Mock: Orayı görüyorum.",
-        "Bilinmiyor": "Mock: ..."
-    }
+    # ----- MOCK LLM LOGIC -----
+    mock_responses = {}
+
     return mock_responses.get(gesture_name, "Mock: ...")
 
 
 def count_fingers(hand_landmarks):
     tip_ids = [8, 12, 16, 20]
-    ##############################
-    count = 0
-    if hand_landmarks.landmark[4].x < hand_landmarks.landmark[3].x:
-        count += 1
-    for id in tip_ids:
-        if hand_landmarks.landmark[id].y < hand_landmarks.landmark[id - 2].y:
-            count += 1
-    return count
+    # ----- COUNT FINGERS LOGIC -----
+
+
+    
+    return " "
