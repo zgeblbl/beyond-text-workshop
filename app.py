@@ -50,15 +50,32 @@ def process_pipeline(image):
                 mp_drawing_styles.get_default_hand_connections_style())
 
             # ----- RULE BASED CLASSIFICATION OF GESTURES -----
+            fingers = utils.count_fingers(hand_landmarks)
 
-
+            if fingers == 0: current_gesture= "Yumruk (Rock)"
+            elif fingers == 1: current_gesture= "Isaret (Point)"
+            elif fingers == 2: current_gesture= "Baris (Peace)"
+            elif fingers == 5: current_gesture= "Selam (Hello)"
+            else : current_gesture = f"{fingers} Parmak"
+            
 
             cv2.putText(image_bgr, f"Tespit: {current_gesture}", (10, 50), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             
     # ----- LLM COOLDOWN AND EVENT DRIVEN LOGIC -----
-    
-    
+
+    current_time = time.time()
+    if current_gesture != "El Yok":
+        if (current_gesture != last_gesture) or (current_time - last_api_call_time > COOLDOWN_SECONDS):
+
+            print(f"LLM isteği gönderiliyor... {current_gesture}")
+            cached_response = utils.get_llm_response(current_gesture)
+
+            last_gesture = current_gesture
+            last_api_call_time = current_time
+
+    final_image = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)    #gradio için
+
     return final_image, cached_response
 
 

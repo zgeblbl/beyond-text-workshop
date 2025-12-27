@@ -17,6 +17,7 @@ def load_api_key():
 
 API_KEY = load_api_key()
 
+
 pipe = None
 model = None
 
@@ -55,8 +56,10 @@ def get_llm_response(gesture_name):
     if USE_LOCAL_LLM and pipe:
         try:
             # ----- Messages to LLM -----
-            messages = []
-
+            messages = [
+                {"role" : "system", "content": "Sen yardımsever ve komik bir robotsun. Çok kısa Türkçe cevap ver."},
+                {"role": "user", "content": f"Kullanıcı '{gesture_name}' hareketini yaptı. Ne dersin?"}
+            ]
             
             prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             outputs = pipe(prompt, max_new_tokens=40, do_sample=True, temperature=0.7)
@@ -71,7 +74,10 @@ def get_llm_response(gesture_name):
     elif model:
         try:
             # ----- Messages to LLM -----
-
+            prompt = f"Sen komik bir robotsun. Kullanıcı '{gesture_name}' yaptı. Komik tek bir cümle söyle."
+            response = model.generate_content(prompt)
+            print(f"Gemini: {response.text.strip()}")
+            return f"Gemini: {response.text.strip()}"
 
         except Exception as e:
             print(f"hata: {e}")
@@ -82,15 +88,24 @@ def get_llm_response(gesture_name):
 
 def get_mock_response(gesture_name):
     # ----- MOCK LLM LOGIC -----
-    mock_responses = {}
-
+    mock_responses = {
+        "Yumruk (Rock)" : "Mock: Güç bende!",
+        "Isaret (Point)" :"Mock: Oraya baktım!",
+        "Baris (Peace)" :"Mock: Barış olsun.",
+        "Selam (Hello)" :"Mock: Selammm nasılsın?",
+        "Bilinmiyor": "Mock:..."
+    }
+   
     return mock_responses.get(gesture_name, "Mock: ...")
 
 
 def count_fingers(hand_landmarks):
     tip_ids = [8, 12, 16, 20]
     # ----- COUNT FINGERS LOGIC -----
-
-
-    
-    return " "
+    count = 0
+    if hand_landmarks.landmark[4].x < hand_landmarks.landmark[3].x:
+        count +=1
+    for id in tip_ids:
+        if hand_landmarks.landmark[id].y < hand_landmarks.landmark[id-2].y:
+            count +=1
+    return count
